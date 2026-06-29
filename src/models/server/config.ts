@@ -8,7 +8,7 @@ import {
     Users
 } from "node-appwrite"
 
-let client = new Client()
+const client = new Client()
 
 client
     .setEndpoint(env.appwrite.endpoint) 
@@ -16,7 +16,6 @@ client
     .setKey(env.appwrite.apikey)
 
 const databases = new Databases(client)
-const account  = new Account(client)
 const storage = new Storage(client)
 const avatars = new Avatars(client)
 const users = new Users(client)
@@ -24,7 +23,6 @@ const users = new Users(client)
 export {
     avatars,
     databases,
-    account,
     storage,
     users
 }

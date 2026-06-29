@@ -1,10 +1,10 @@
-import env from "@app/env"
-import {Client,Account} from "appwrite"
+import env from "@/app/env"
+import {Client,Account,Avatars,Storage,Databases} from "appwrite"
 
 
 
 const client = new Client()
- .setEndpoint(env.appwrite.envpoint)
+ .setEndpoint(env.appwrite.endpoint)
  .setProject(env.appwrite.projectId)
 
 

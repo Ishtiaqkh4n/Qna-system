@@ -42,7 +42,7 @@ const Footer = () => {
                                 href="/"
                                 className="bg-gradient-to-b from-[#ffd319] via-[#ff2975] to-[#8c1eff] bg-clip-text text-2xl font-bold tracking-tighter text-transparent"
                             >
-                                RiverFlow
+                                StackMind
                             </Link>
                             <p className="mt-3 text-sm leading-relaxed text-white/50">
                                 A community-driven Q&A platform for developers. Share knowledge,
@@ -83,11 +83,11 @@ const Footer = () => {
                     </div>
                     <div className="mt-10 flex flex-col items-center justify-between gap-2 border-t border-white/10 pt-6 text-xs text-white/30 sm:flex-row">
                         <p>
-                            &copy; {new Date().getFullYear()} RiverFlow. All rights reserved.
+                            &copy; {new Date().getFullYear()} StackMind. All rights reserved.
                         </p>
                         <p className="flex items-center gap-1">
-                            Made with <IconHeart className="h-3 w-3 text-red-500" /> by the
-                            RiverFlow team
+                            Made with <IconHeart className="h-3 w-3 text-red-500" /> by
+                            Ishtiaq Khan
                         </p>
                     </div>
                 </div>

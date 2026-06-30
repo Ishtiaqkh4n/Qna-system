@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import convertDateToRelativeTime from "@/utils/relativeTime";
 import slugify from "@/utils/slugify";
 import { IconTrash } from "@tabler/icons-react";
-import { ID, Models } from "appwrite";
+import { ID } from "appwrite";
 import Link from "next/link";
 import React from "react";
 
@@ -17,7 +17,7 @@ const Comments = ({
     typeId,
     className,
 }: {
-    comments: Models.DocumentList<Models.Document>;
+    comments: { total: number; documents: any[] };
     type: "question" | "answer";
     typeId: string;
     className?: string;

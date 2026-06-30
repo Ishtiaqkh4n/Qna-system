@@ -1,6 +1,6 @@
 "use client";
 
-import { ID, Models } from "appwrite";
+import { ID } from "appwrite";
 import React from "react";
 import VoteButtons from "./VoteButtons";
 import { useAuthStore } from "@/store/Auth";
@@ -16,7 +16,7 @@ const Answers = ({
     answers: _answers,
     questionId,
 }: {
-    answers: Models.DocumentList<Models.Document>;
+    answers: { total: number; documents: any[] };
     questionId: string;
 }) => {
     const [answers, setAnswers] = React.useState(_answers);
@@ -30,6 +30,9 @@ const Answers = ({
         try {
             const response = await fetch("/api/answer", {
                 method: "POST",
+                headers: {
+                    "x-appwrite-jwt": useAuthStore.getState().jwt || "",
+                },
                 body: JSON.stringify({
                     questionId: questionId,
                     answer: newAnswer,

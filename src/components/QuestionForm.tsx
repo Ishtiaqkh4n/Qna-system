@@ -48,7 +48,6 @@ const QuestionForm = ({ question }: { question?: any }) => {
     const [formData, setFormData] = React.useState({
         title: String(question?.title || ""),
         content: String(question?.content || ""),
-        authorId: user?.$id,
         tags: new Set((question?.tags || []) as string[]),
         attachment: null as File | null,
     });
@@ -98,7 +97,7 @@ const QuestionForm = ({ question }: { question?: any }) => {
         const response = await databases.createDocument(db, questionCollection, ID.unique(), {
             title: formData.title,
             content: formData.content,
-            authorId: formData.authorId,
+            authorId: user?.$id,
             tags: Array.from(formData.tags),
             attachmentId: storageResponse.$id,
         });
@@ -128,7 +127,7 @@ const QuestionForm = ({ question }: { question?: any }) => {
         const response = await databases.updateDocument(db, questionCollection, question.$id, {
             title: formData.title,
             content: formData.content,
-            authorId: formData.authorId,
+            authorId: user?.$id,
             tags: Array.from(formData.tags),
             attachmentId: attachmentId,
         });
@@ -140,7 +139,7 @@ const QuestionForm = ({ question }: { question?: any }) => {
         e.preventDefault();
 
         // didn't check for attachment because it's optional in updating
-        if (!formData.title || !formData.content || !formData.authorId) {
+        if (!formData.title || !formData.content || !user?.$id) {
             setError(() => "Please fill out all fields");
             return;
         }

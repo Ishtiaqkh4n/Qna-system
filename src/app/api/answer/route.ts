@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { answerCollection,db } from "@/models/name";
 import {ID} from "node-appwrite"
-import {databases, users} from "@/models/server/config"
+import {databases, users, verifyAuth} from "@/models/server/config"
 import  {UserPrefs} from "@/store/Auth" 
 
 export async function POST(request:NextRequest){
     try{
-       const {questionId,answer,authorId}=await request.json()
+       const user = await verifyAuth(request)
+       const {questionId,answer}=await request.json()
+       const authorId = user.$id
        const response = await databases.createDocument(db,
         answerCollection,ID.unique(),{
             content:answer,
@@ -41,9 +43,16 @@ export async function POST(request:NextRequest){
 
 export async function DELETE(request: NextRequest){
   try {
+    const user = await verifyAuth(request)
     const {answerId} = await request.json()
 
     const answer = await databases.getDocument(db, answerCollection, answerId)
+    if (answer.authorId !== user.$id) {
+      return NextResponse.json(
+        { message: "You can only delete your own answers" },
+        { status: 403 }
+      )
+    }
 
     const response = await databases.deleteDocument(db, answerCollection, answerId)
 

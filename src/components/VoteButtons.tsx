@@ -5,7 +5,12 @@ import { db, voteCollection } from "@/models/name";
 import { useAuthStore } from "@/store/Auth";
 import { cn } from "@/lib/utils";
 import { IconCaretUpFilled, IconCaretDownFilled } from "@tabler/icons-react";
-import { ID, Models, Query } from "appwrite";
+import { Query } from "appwrite";
+
+interface VoteDocument {
+    $id: string;
+    voteStatus: "upvoted" | "downvoted";
+}
 import { useRouter } from "next/navigation";
 import React from "react";
 
@@ -18,11 +23,11 @@ const VoteButtons = ({
 }: {
     type: "question" | "answer";
     id: string;
-    upvotes: Models.DocumentList<Models.Document>;
-    downvotes: Models.DocumentList<Models.Document>;
+    upvotes: { total: number; documents?: any[] };
+    downvotes: { total: number; documents?: any[] };
     className?: string;
 }) => {
-    const [votedDocument, setVotedDocument] = React.useState<any>(); // undefined means not fetched yet
+    const [votedDocument, setVotedDocument] = React.useState<VoteDocument | null | undefined>(undefined); // undefined means not fetched yet
     const [voteResult, setVoteResult] = React.useState<number>(upvotes.total - downvotes.total);
 
     const { user } = useAuthStore();
@@ -36,7 +41,7 @@ const VoteButtons = ({
                     Query.equal("typeId", id),
                     Query.equal("votedById", user.$id),
                 ]);
-                setVotedDocument(() => response.documents[0] || null);
+                setVotedDocument(() => response.documents[0] as unknown as VoteDocument | null);
             }
         })();
     }, [user, id, type]);
@@ -49,6 +54,9 @@ const VoteButtons = ({
         try {
             const response = await fetch(`/api/vote`, {
                 method: "POST",
+                headers: {
+                    "x-appwrite-jwt": useAuthStore.getState().jwt || "",
+                },
                 body: JSON.stringify({
                     votedById: user.$id,
                     voteStatus: "upvoted",
@@ -62,7 +70,7 @@ const VoteButtons = ({
             if (!response.ok) throw data;
 
             setVoteResult(() => data.data.voteResult);
-            setVotedDocument(() => data.data.document);
+            setVotedDocument(() => data.data.document as VoteDocument | null);
         } catch (error: any) {
             window.alert(error?.message || "Something went wrong");
         }
@@ -76,6 +84,9 @@ const VoteButtons = ({
         try {
             const response = await fetch(`/api/vote`, {
                 method: "POST",
+                headers: {
+                    "x-appwrite-jwt": useAuthStore.getState().jwt || "",
+                },
                 body: JSON.stringify({
                     votedById: user.$id,
                     voteStatus: "downvoted",
@@ -89,7 +100,7 @@ const VoteButtons = ({
             if (!response.ok) throw data;
 
             setVoteResult(() => data.data.voteResult);
-            setVotedDocument(() => data.data.document);
+            setVotedDocument(() => data.data.document as VoteDocument | null);
         } catch (error: any) {
             window.alert(error?.message || "Something went wrong");
         }

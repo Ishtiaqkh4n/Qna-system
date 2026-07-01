@@ -10,6 +10,7 @@ import { IconTrash } from "@tabler/icons-react";
 import { ID } from "appwrite";
 import Link from "next/link";
 import React from "react";
+import toast from "react-hot-toast";
 
 const Comments = ({
     comments: _comments,
@@ -43,8 +44,9 @@ const Comments = ({
                 total: prev.total + 1,
                 documents: [{ ...response, author: user }, ...prev.documents],
             }));
+            toast.success("Comment added!");
         } catch (error: any) {
-            window.alert(error?.message || "Error creating comment");
+            toast.error(error?.message || "Error creating comment");
         }
     };
 
@@ -56,8 +58,9 @@ const Comments = ({
                 total: prev.total - 1,
                 documents: prev.documents.filter(comment => comment.$id !== commentId),
             }));
+            toast.success("Comment deleted!");
         } catch (error: any) {
-            window.alert(error?.message || "Error deleting comment");
+            toast.error(error?.message || "Error deleting comment");
         }
     };
 

@@ -11,6 +11,7 @@ import Comments from "./Comments";
 import slugify from "@/utils/slugify";
 import Link from "next/link";
 import { IconTrash } from "@tabler/icons-react";
+import toast from "react-hot-toast";
 
 const Answers = ({
     answers: _answers,
@@ -58,8 +59,9 @@ const Answers = ({
                     ...prev.documents,
                 ],
             }));
+            toast.success("Answer posted successfully!");
         } catch (error: any) {
-            window.alert(error?.message || "Error creating answer");
+            toast.error(error?.message || "Error creating answer");
         }
     };
 
@@ -80,8 +82,9 @@ const Answers = ({
                 total: prev.total - 1,
                 documents: prev.documents.filter(answer => answer.$id !== answerId),
             }));
+            toast.success("Answer deleted!");
         } catch (error: any) {
-            window.alert(error?.message || "Error deleting answer");
+            toast.error(error?.message || "Error deleting answer");
         }
     };
 

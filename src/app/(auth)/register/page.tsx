@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
 import Link from "next/link";
-import { register } from "module";
+import toast from "react-hot-toast";
 
 const BottomGradient = () => {
     return (
@@ -30,7 +30,6 @@ const LabelInputContainer = ({
 function   RegisterPage(){
     const {login , createAccount}  = useAuthStore()
     const [isLoading,setIsLoading] = React.useState(false)
-    const [error,setError] = React.useState("")
 
     const handleSubmit = async(e:React.
         FormEvent<HTMLFormElement>)=>{
@@ -44,13 +43,12 @@ function   RegisterPage(){
             const password = formData.get("password")
 
             if(!firstname || !lastname || !email || !password){
-                setError("Please fill all fields")
+                toast.error("Please fill all fields")
                 return
         }
          
             //call the store 
              setIsLoading(true)
-             setError("")
 
             const response = await createAccount(
                 `${firstname} ${lastname}`,
@@ -59,11 +57,11 @@ function   RegisterPage(){
              )
 
              if(response.error){
-                setError(()=> response.error!.message)
+                toast.error(response.error!.message)
              }else{
                 const LoginResponse = await login(email.toString(),password.toString())
                 if(LoginResponse.error){
-                   setError(() => LoginResponse.error?.message ?? "An unknown error occurred")
+                   toast.error(LoginResponse.error?.message ?? "An unknown error occurred")
                 }
 
              }
@@ -77,7 +75,7 @@ function   RegisterPage(){
                 Welcome to StackMind
             </h2>
             <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
-                Signup with riverflow if you you don&apos;t have an account.
+                Signup with StackMind if you you don&apos;t have an account.
                 <br /> If you already have an account,{" "}
                 <Link href="/login" className="text-orange-500 hover:underline">
                     login
@@ -85,9 +83,6 @@ function   RegisterPage(){
                 to riverflow
             </p>
 
-            {error && (
-                <p className="mt-8 text-center text-sm text-red-500 dark:text-red-400">{error}</p>
-            )}
             <form className="my-8" onSubmit={handleSubmit}>
                 <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
                     <LabelInputContainer>

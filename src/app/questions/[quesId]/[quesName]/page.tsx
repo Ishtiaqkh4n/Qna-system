@@ -173,7 +173,7 @@ const Page = async ({ params }: { params: Promise<{ quesId: string; quesName: st
                             <picture>
                                 <img
                                     src={String(
-                                        storage.getFilePreview(
+                                        storage.getFileView(
                                             questionAttachmentBucket,
                                             question.attachmentId
                                         )

@@ -14,6 +14,7 @@ import React from "react";
 import { databases, storage } from "@/models/client/config";
 import { db, questionAttachmentBucket, questionCollection } from "@/models/name";
 import { Confetti } from "@/components/magicui/confetti";
+import toast from "react-hot-toast";
 
 const LabelInputContainer = ({
     children,
@@ -53,7 +54,6 @@ const QuestionForm = ({ question }: { question?: any }) => {
     });
 
     const [loading, setLoading] = React.useState(false);
-    const [error, setError] = React.useState("");
 
     const loadConfetti = (timeInMS = 3000) => {
         const end = Date.now() + timeInMS; // 3 seconds
@@ -102,6 +102,8 @@ const QuestionForm = ({ question }: { question?: any }) => {
             attachmentId: storageResponse.$id,
         });
 
+        toast.success("Question posted successfully!");
+
         loadConfetti();
 
         return response;
@@ -132,6 +134,8 @@ const QuestionForm = ({ question }: { question?: any }) => {
             attachmentId: attachmentId,
         });
 
+        toast.success("Question updated successfully!");
+
         return response;
     };
 
@@ -140,19 +144,18 @@ const QuestionForm = ({ question }: { question?: any }) => {
 
         // didn't check for attachment because it's optional in updating
         if (!formData.title || !formData.content || !user?.$id) {
-            setError(() => "Please fill out all fields");
+            toast.error("Please fill out all fields");
             return;
         }
 
         setLoading(() => true);
-        setError(() => "");
 
         try {
             const response = question ? await update() : await create();
 
             router.push(`/questions/${response.$id}/${slugify(formData.title)}`);
         } catch (error: any) {
-            setError(() => error.message);
+            toast.error(error.message || "Something went wrong");
         }
 
         setLoading(() => false);
@@ -160,13 +163,6 @@ const QuestionForm = ({ question }: { question?: any }) => {
 
     return (
         <form className="space-y-4" onSubmit={submit}>
-            {error && (
-                <LabelInputContainer>
-                    <div className="text-center">
-                        <span className="text-red-500">{error}</span>
-                    </div>
-                </LabelInputContainer>
-            )}
             <LabelInputContainer>
                 <Label htmlFor="title">
                     Title Address

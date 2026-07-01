@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/Auth";
 import { IconTrash } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import React from "react";
+import toast from "react-hot-toast";
 
 const DeleteQuestion = ({ questionId, authorId }: { questionId: string; authorId: string }) => {
     const router = useRouter();
@@ -15,9 +16,10 @@ const DeleteQuestion = ({ questionId, authorId }: { questionId: string; authorId
         try {
             await databases.deleteDocument(db, questionCollection, questionId);
 
+            toast.success("Question deleted!");
             router.push("/questions");
         } catch (error: any) {
-            window.alert(error?.message || "Something went wrong");
+            toast.error(error?.message || "Something went wrong");
         }
     };
 

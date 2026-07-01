@@ -2,8 +2,9 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
 
-import {AppwriteException, ID, Models} from "appwrite"
+import {AppwriteException, ID, Models, OAuthProvider} from "appwrite"
 import { account } from "@/models/client/config";
+import toast from "react-hot-toast";
 
 
 export interface UserPrefs {
@@ -26,6 +27,7 @@ interface IAuthStore {
     success: boolean;
     error?: AppwriteException| null
   }>
+  oauthLogin(provider: string): Promise<void>;
   createAccount(
     name: string,
     email: string,
@@ -74,12 +76,14 @@ export const useAuthStore = create<IAuthStore>()(
           })
 
           set({session, user, jwt})
-          
+
+          toast.success(`Welcome back, ${user.name}!`);
+
           return { success: true}
 
         } catch (error) {
-
-          console.log(error)
+          const message = error instanceof AppwriteException ? error.message : "Login failed";
+          toast.error(message);
           return {
             success: false,
             error: error instanceof AppwriteException ? error: null,
@@ -88,12 +92,27 @@ export const useAuthStore = create<IAuthStore>()(
         }
       },
 
+      async oauthLogin(provider: string) {
+        try {
+          const baseUrl = window.location.origin;
+          account.createOAuth2Session(
+            provider as OAuthProvider,
+            `${baseUrl}/oauth/callback`,
+            `${baseUrl}/login?error=OAuth+login+failed`
+          );
+        } catch (error) {
+          console.error("OAuth login failed:", error);
+        }
+      },
+
       async createAccount(name:string, email: string, password: string) {
         try {
           await account.create(ID.unique(), email, password, name)
+          toast.success("Account created! Logging you in...");
           return {success: true}
         } catch (error) {
-          console.log(error)
+          const message = error instanceof AppwriteException ? error.message : "Registration failed";
+          toast.error(message);
           return {
             success: false,
             error: error instanceof AppwriteException ? error: null,
@@ -106,9 +125,10 @@ export const useAuthStore = create<IAuthStore>()(
         try {
           await account.deleteSessions()
           set({session: null, jwt: null, user: null})
-          
+          toast.success("Logged out successfully");
         } catch (error) {
-          console.log(error)
+          const message = error instanceof AppwriteException ? error.message : "Logout failed";
+          toast.error(message);
         }
       },
     })),

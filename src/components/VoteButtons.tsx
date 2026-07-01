@@ -13,6 +13,7 @@ interface VoteDocument {
 }
 import { useRouter } from "next/navigation";
 import React from "react";
+import toast from "react-hot-toast";
 
 const VoteButtons = ({
     type,
@@ -36,12 +37,19 @@ const VoteButtons = ({
     React.useEffect(() => {
         (async () => {
             if (user) {
-                const response = await databases.listDocuments(db, voteCollection, [
-                    Query.equal("type", type),
-                    Query.equal("typeId", id),
-                    Query.equal("votedById", user.$id),
-                ]);
-                setVotedDocument(() => response.documents[0] as unknown as VoteDocument | null);
+                try {
+                    const response = await databases.listDocuments(db, voteCollection, [
+                        Query.equal("type", type),
+                        Query.equal("typeId", id),
+                        Query.equal("votedById", user.$id),
+                    ]);
+                    setVotedDocument(() => (response.documents[0] as unknown as VoteDocument | undefined) || null);
+                } catch (error) {
+                    console.error("Failed to fetch existing vote:", error);
+                    setVotedDocument(null); // allow voting even if fetch fails
+                }
+            } else {
+                setVotedDocument(null); // no user, so not voted
             }
         })();
     }, [user, id, type]);
@@ -71,8 +79,9 @@ const VoteButtons = ({
 
             setVoteResult(() => data.data.voteResult);
             setVotedDocument(() => data.data.document as VoteDocument | null);
+            toast.success(data.message || "Vote recorded!");
         } catch (error: any) {
-            window.alert(error?.message || "Something went wrong");
+            toast.error(error?.message || "Something went wrong");
         }
     };
 
@@ -101,8 +110,9 @@ const VoteButtons = ({
 
             setVoteResult(() => data.data.voteResult);
             setVotedDocument(() => data.data.document as VoteDocument | null);
+            toast.success(data.message || "Vote recorded!");
         } catch (error: any) {
-            window.alert(error?.message || "Something went wrong");
+            toast.error(error?.message || "Something went wrong");
         }
     };
 

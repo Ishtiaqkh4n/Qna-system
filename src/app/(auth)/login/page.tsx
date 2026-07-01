@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 
 const BottomGradient = () => {
@@ -31,9 +32,8 @@ const LabelInputContainer = ({
 
 
 function LoginPage() {
-    const {login} = useAuthStore()
+    const {login, oauthLogin} = useAuthStore()
     const [isLoading,setIsLoading] = React.useState(false)
-    const [error,setError] = React.useState("")
 
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -47,7 +47,7 @@ function LoginPage() {
 
         //validation
         if(!email || !password){
-            setError(()=>"Please fill all fields")
+            toast.error("Please fill all fields")
             return  
         }
 
@@ -59,7 +59,7 @@ function LoginPage() {
         const loginResponse = await login(email.toString(),password.toString())
 
         if(loginResponse.error){
-            setError(()=> loginResponse.error!.message)
+            toast.error(loginResponse.error!.message)
         }
 
 
@@ -71,17 +71,14 @@ function LoginPage() {
                 Login to StackMind
             </h2>
             <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
-                Login to riverflow
+                Login to StackMind
                 <br /> If you don&apos;t have an account,{" "}
                 <Link href="/register" className="text-orange-500 hover:underline">
                     register
                 </Link>{" "}
-                with riverflow
+                with StackMind
             </p>
 
-            {error && (
-                <p className="mt-8 text-center text-sm text-red-500 dark:text-red-400">{error}</p>
-            )}
             <form className="my-8" onSubmit={handleSubmit}>
                 <LabelInputContainer className="mb-4">
                     <Label htmlFor="email">Email Address</Label>
@@ -111,10 +108,9 @@ function LoginPage() {
 
                 <div className="flex flex-col space-y-4">
                     <button
-                        className="group/btn relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black shadow-input opacity-50 cursor-not-allowed dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
+                        className="group/btn relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black shadow-input dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
                         type="button"
-                        disabled
-                        title="OAuth not yet configured"
+                        onClick={() => oauthLogin("google")}
                     >
                         <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
                         <span className="text-sm text-neutral-700 dark:text-neutral-300">
@@ -123,10 +119,9 @@ function LoginPage() {
                         <BottomGradient />
                     </button>
                     <button
-                        className="group/btn relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black shadow-input opacity-50 cursor-not-allowed dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
+                        className="group/btn relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black shadow-input dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
                         type="button"
-                        disabled
-                        title="OAuth not yet configured"
+                        onClick={() => oauthLogin("github")}
                     >
                         <IconBrandGithub className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
                         <span className="text-sm text-neutral-700 dark:text-neutral-300">
